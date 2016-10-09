@@ -34,6 +34,43 @@ enum OpCode: UInt16 {
         self.init(rawValue: value)!
     }
     
+    init?(mnemonic: String) {
+        switch mnemonic {
+        case "noop":
+            self = .noop
+        case "halt":
+            self = .halt
+        case "jmp":
+            self = .jmp
+        case "cond":
+            self = .cond
+        case "loadi":
+            self = .loadi
+        case "addi":
+            self = .addi
+        case "subi":
+            self = .subi
+        case "muli":
+            self = .muli
+        case "divi":
+            self = .divi
+        case "eqi":
+            self = .eqi
+        case "neqi":
+            self = .neqi
+        case "lti":
+            self = .lti
+        case "ltei":
+            self = .ltei
+        case "gti":
+            self = .gti
+        case "gtei":
+            self = .gtei
+        default:
+            return nil
+        }
+    }
+    
     var usesLongArg: Bool {
         switch self {
         case .jmp,

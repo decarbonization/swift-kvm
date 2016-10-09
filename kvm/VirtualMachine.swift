@@ -35,10 +35,10 @@ class VirtualMachine {
         case .halt:
             isRunning = false
         case .jmp:
-            counter = Int(instruction.longArg) - 1
+            counter = Int(instruction.longArg)
         case .cond:
             if memory.ints[instruction.arg2] != 0 {
-                counter = Int(instruction.longArg) - 1
+                counter = Int(instruction.longArg)
             }
         case .loadi:
             memory.ints[instruction.arg2] = Int32(instruction.longArg)

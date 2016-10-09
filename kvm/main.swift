@@ -8,14 +8,18 @@
 
 import Foundation
 
-let testProgram = [
-    /* 1: */ Instruction(opCode: .loadi, longArg: 2, arg2: 0),
-    /* 2: */ Instruction(opCode: .loadi, longArg: 3, arg2: 1),
-    /* 3: */ Instruction(opCode: .lti, arg0: 0, arg1: 1, arg2: 2),
-    /* 4: */ Instruction(opCode: .cond, longArg: 6, arg2: 2),
-    /* 5: */ Instruction(opCode: .halt),
-    /* 6: */ Instruction(opCode: .loadi, longArg: 42, arg2: 11),
-    /* 7: */ Instruction(opCode: .halt),
-]
+let listing = (
+    "_main:\n" +
+    "    loadi 2i, $0\n" +
+    "    loadi 3i, $1\n" +
+    "    lti $0, $1, $2\n" +
+    "    cond @load42, $2\n" +
+    "    jmp @exit\n" +
+    "load42:\n" +
+    "    loadi 42i, $11\n" +
+    "exit:\n" +
+    "    halt"
+)
+let testProgram = try! parse(listing: listing)
 let vm = VirtualMachine(program: testProgram)
 vm.run()
