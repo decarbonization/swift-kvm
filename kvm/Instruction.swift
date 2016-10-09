@@ -15,13 +15,20 @@ import Foundation
  */
 enum OpCode: UInt16 {
     case noop = 0
-    case halt = 1
-    case jmp = 2
-    case loadi = 3
-    case addi = 4
-    case subi = 5
-    case muli = 6
-    case divi = 7
+    case halt
+    case jmp
+    case cond
+    case loadi
+    case addi
+    case subi
+    case muli
+    case divi
+    case eqi
+    case neqi
+    case lti
+    case ltei
+    case gti
+    case gtei
     
     init(_ value: UInt16) {
         self.init(rawValue: value)!
@@ -29,7 +36,9 @@ enum OpCode: UInt16 {
     
     var usesLongArg: Bool {
         switch self {
-        case .jmp:
+        case .jmp,
+             .cond,
+             .loadi:
             return true
         default:
             return false
@@ -58,9 +67,9 @@ struct Instruction: RawRepresentable, CustomStringConvertible, Hashable {
     }
     
     init(opCode: OpCode,
-         arg0: UInt16 = 0,
-         arg1: UInt16 = 0,
-         arg2: UInt16 = 0) {
+         arg0: UInt16,
+         arg1: UInt16,
+         arg2: UInt16) {
         let packedWord = (
             (UInt64(arg2)) |
             (UInt64(arg1) << 16) |
@@ -71,12 +80,16 @@ struct Instruction: RawRepresentable, CustomStringConvertible, Hashable {
     }
     
     init(opCode: OpCode,
-         longArg: UInt32 = 0,
-         arg2: UInt16 = 0) {
+         longArg: UInt32,
+         arg2: UInt16) {
         self.init(opCode: opCode,
                   arg0: UInt16((longArg >> 16) & 0x0000FFFF),
                   arg1: UInt16((longArg) & 0x0000FFFF),
                   arg2: arg2)
+    }
+    
+    init(opCode: OpCode) {
+        self.init(opCode: opCode, arg0: 0, arg1: 0, arg2: 0)
     }
     
     var opCode: OpCode {

@@ -8,9 +8,14 @@
 
 import Foundation
 
-let test = [
-    Instruction(opCode: .addi, arg0: 1, arg1: 2, arg2: 3),
-    Instruction(opCode: .divi, arg0: 4, arg1: 5, arg2: 6),
-    Instruction(opCode: .jmp, longArg: 0xffffffff, arg2: 0x1),
+let testProgram = [
+    /* 1: */ Instruction(opCode: .loadi, longArg: 2, arg2: 0),
+    /* 2: */ Instruction(opCode: .loadi, longArg: 3, arg2: 1),
+    /* 3: */ Instruction(opCode: .lti, arg0: 0, arg1: 1, arg2: 2),
+    /* 4: */ Instruction(opCode: .cond, longArg: 6, arg2: 2),
+    /* 5: */ Instruction(opCode: .halt),
+    /* 6: */ Instruction(opCode: .loadi, longArg: 42, arg2: 11),
+    /* 7: */ Instruction(opCode: .halt),
 ]
-print(test)
+let vm = VirtualMachine(program: testProgram)
+vm.run()
