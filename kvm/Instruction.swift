@@ -99,6 +99,8 @@ struct Instruction: RawRepresentable, CustomStringConvertible, Hashable {
     
     let rawValue: UInt64
     
+    // MARK: - Initializers
+    
     init(rawValue: UInt64) {
         self.rawValue = rawValue
     }
@@ -129,6 +131,21 @@ struct Instruction: RawRepresentable, CustomStringConvertible, Hashable {
         self.init(opCode: opCode, arg0: 0, arg1: 0, arg2: 0)
     }
     
+    init?(data: Data) {
+        guard data.count == MemoryLayout<RawValue>.size else {
+            return nil
+        }
+        
+        var value: UInt64 = 0
+        let buffer = UnsafeMutableBufferPointer(start: &value, count: 1)
+        guard data.copyBytes(to: buffer) == data.count else {
+            return nil
+        }
+        self.init(rawValue: value)
+    }
+    
+    // MARK: - Properties
+    
     var opCode: OpCode {
         return OpCode(UInt16((rawValue >> 48) & 0x000000000000FFFF))
     }
@@ -148,6 +165,13 @@ struct Instruction: RawRepresentable, CustomStringConvertible, Hashable {
     var longArg: UInt32 {
         return (UInt32(arg1) | (UInt32(arg0) << 16))
     }
+    
+    var dataRepresentation: Data {
+        var value = rawValue
+        return Data(bytes: &value, count: MemoryLayout<RawValue>.size)
+    }
+    
+    // MARK: - Identity
     
     var hashValue: Int {
         return Int(rawValue)
