@@ -1,5 +1,5 @@
 //
-//  Memory.swift
+//  MemorySpace.swift
 //  kvm
 //
 //  Created by Kevin MacWhinnie on 10/8/16.
@@ -14,14 +14,24 @@ import Foundation
  */
 class RegisterBank: CustomStringConvertible {
     /// The backing store for the register bank.
-    private var storage: [UInt32]
+    private let storage: UnsafeMutablePointer<UInt32>
+    
+    /// The number of registers in the bank.
+    private let count: Int
     
     /// Initialize the register bank with a given count and default value.
     ///
     /// - parameter count: The number of registers to allocate.
     /// - parameter defaultValue: The default value to place in the registers. Optional.
     init(count: UInt16, defaultValue: UInt32 = 0) {
-        self.storage = Array(repeating: defaultValue, count: Int(count))
+        self.count = Int(count)
+        self.storage = UnsafeMutablePointer.allocate(capacity: self.count)
+        storage.initialize(to: defaultValue, count: self.count)
+    }
+    
+    deinit {
+        storage.deinitialize()
+        storage.deallocate(capacity: self.count)
     }
     
     /// Access the value of a register with a specified index.
@@ -35,10 +45,11 @@ class RegisterBank: CustomStringConvertible {
     }
     
     var description: String {
-        return storage.lazy
-                      .enumerated()
-                      .map{ (i, v) in "r\(i) = 0x\(String(v, radix: 16))" }
-                      .joined(separator: "\n")
+        var lines = ""
+        for index in 0..<count {
+            lines += "r\(index) = 0x\(String(storage[index], radix: 16))\n"
+        }
+        return lines.trimmingCharacters(in: .whitespacesAndNewlines)
     }
 }
 
