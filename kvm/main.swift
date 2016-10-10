@@ -10,13 +10,13 @@ import Foundation
 
 let listing = (
     "_main:\n" +
-    "    loadi 2i, $0\n" +
-    "    loadi 3i, $1\n" +
-    "    lti $0, $1, $2\n" +
-    "    cond @load42, $2\n" +
+    "    li 2i, $gpr1\n" +
+    "    li 3i, $gpr2\n" +
+    "    lti $gpr1, $gpr2, $cond\n" +
+    "    cond @load42, $cond\n" +
     "    jmp @exit\n" +
     "load42:\n" +
-    "    loadi 42i, $11\n" +
+    "    li 42i, $gpr3\n" +
     "exit:\n" +
     "    halt"
 )

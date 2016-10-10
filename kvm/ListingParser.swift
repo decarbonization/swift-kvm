@@ -146,10 +146,13 @@ private func parseArg(on lineNumber: Int,
         return jumpOffset
     } else if string.hasPrefix(registerArgPrefix), let prefixRange = string.range(of: registerArgPrefix) {
         let register = string.substring(from: prefixRange.upperBound)
-        guard let registerNumber = UInt32(register) else {
+        if let registerNumber = UInt32(register) {
+            return registerNumber
+        } else if let registerName = Register(mnemonic: register) {
+            return UInt32(registerName.rawValue)
+        } else {
             throw ListingParseError.badRegister(line: lineNumber, rawValue: register)
         }
-        return registerNumber
     } else if isNumber(string) && string.hasSuffix(intArgSuffix) {
         return try parseInt32(on: lineNumber, from: string)
     } else if isNumber(string) && string.hasSuffix(floatArgSuffix) {

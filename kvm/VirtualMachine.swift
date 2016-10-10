@@ -40,7 +40,7 @@ class VirtualMachine {
             if memory.ints[instruction.arg2] != 0 {
                 counter = Int(instruction.longArg)
             }
-        case .loadi:
+        case .li:
             memory.ints[instruction.arg2] = Int32(instruction.longArg)
         case .addi:
             memory.ints[instruction.arg2] = memory.ints[instruction.arg0] + memory.ints[instruction.arg1]
