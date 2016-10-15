@@ -10,7 +10,7 @@ import Foundation
 
 class VirtualMachine {
     let program: [Instruction]
-    var memory: MemorySpace = MemorySpace()
+    var registers: RegisterBank = RegisterBank()
     var counter: UInt32 = 0
     var isRunning: Bool = false
     
@@ -29,7 +29,6 @@ class VirtualMachine {
     func evaluate(instruction i: Instruction) {
         debugPrint(i)
         
-        let registers = memory.registers
         switch i.opCode {
         case .noop:
             break
@@ -51,6 +50,10 @@ class VirtualMachine {
             registers[i.arg2] = Word(registers[i.arg0].int * registers[i.arg1].int)
         case .divi:
             registers[i.arg2] = Word(registers[i.arg0].int / registers[i.arg1].int)
+        case .icri:
+            registers[i.arg2] = Word(registers[i.arg0].int + 1)
+        case .dcri:
+            registers[i.arg2] = Word(registers[i.arg0].int - 1)
         case .eqi:
             let result = (registers[i.arg0].int == registers[i.arg1].int)
             registers[i.arg2] = Word(result)
@@ -69,6 +72,20 @@ class VirtualMachine {
         case .gtei:
             let result = (registers[i.arg0].int >= registers[i.arg1].int)
             registers[i.arg2] = Word(result)
+        case .shli:
+            registers[i.arg2] = Word(registers[i.arg0].int << registers[i.arg1].int)
+        case .shri:
+            registers[i.arg2] = Word(registers[i.arg0].int >> registers[i.arg1].int)
+        case .andb:
+            registers[i.arg2] = Word(rawValue: registers[i.arg0].rawValue & registers[i.arg1].rawValue)
+        case .orb:
+            registers[i.arg2] = Word(rawValue: registers[i.arg0].rawValue | registers[i.arg1].rawValue)
+        case .xorb:
+            registers[i.arg2] = Word(rawValue: registers[i.arg0].rawValue ^ registers[i.arg1].rawValue)
+        case .or:
+            registers[i.arg2] = Word(registers[i.arg0].bool || registers[i.arg1].bool)
+        case .and:
+            registers[i.arg2] = Word(registers[i.arg0].bool && registers[i.arg1].bool)
         }
     }
     
@@ -80,6 +97,6 @@ class VirtualMachine {
             let next = fetch()
             evaluate(instruction: next)
         }
-        debugPrint(memory)
+        debugPrint(registers)
     }
 }

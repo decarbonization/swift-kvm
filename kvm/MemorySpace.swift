@@ -121,6 +121,9 @@ enum Register: UInt16 {
     /// The nineth general purpose register.
     case gpr9
     
+    /// The default number of registers.
+    static let count: UInt16 = 12
+    
     /// Attempt to initialize a register from a mnemonic string
     init?(mnemonic: String) {
         switch mnemonic {
@@ -154,10 +157,8 @@ enum Register: UInt16 {
     }
 }
 
-/**
- *  A fixed length sequence of unsigned 32 bit integers that
- *  tracks values read and written within a virtual machine.
- */
+/// A fixed length sequence of `Word` values that
+/// represents registers within a virtual machine.
 class RegisterBank: CustomStringConvertible {
     /// The backing store for the register bank.
     private let storage: UnsafeMutablePointer<Word>
@@ -169,7 +170,7 @@ class RegisterBank: CustomStringConvertible {
     ///
     /// - parameter count: The number of registers to allocate.
     /// - parameter defaultValue: The default value to place in the registers. Optional.
-    init(count: UInt16, defaultValue: Word = .zero) {
+    init(count: UInt16 = Register.count, defaultValue: Word = .zero) {
         self.count = Int(count)
         self.storage = UnsafeMutablePointer.allocate(capacity: self.count)
         storage.initialize(to: defaultValue, count: self.count)
@@ -200,6 +201,28 @@ class RegisterBank: CustomStringConvertible {
         }
     }
     
+    /// Returns the value of a register, clearing the register.
+    ///
+    /// - parameter index: The index of the register to read and clear.
+    /// - returns: The old value of the register.
+    func consume(index: UInt16) -> Word {
+        let index = Int(index)
+        let value = storage[index]
+        storage[index] = .zero
+        return value
+    }
+    
+    /// Returns the value of a register, clearing the register.
+    ///
+    /// - parameter register: The mnemonic of the register to read and clear.
+    /// - returns: The old value of the register.
+    func consume(register: Register) -> Word {
+        let index = Int(register.rawValue)
+        let value = storage[index]
+        storage[index] = .zero
+        return value
+    }
+    
     var description: String {
         var lines = ""
         for i in 0..<count {
@@ -213,19 +236,36 @@ class RegisterBank: CustomStringConvertible {
 
 // MARK: - Address Space
 
-/**
- *  Encapsulates the memory space of a virtual machine. This includes registers and stack space.
- */
-struct MemorySpace: CustomStringConvertible {
-    /// The registers of the memory space.
-    let registers: RegisterBank
+/// The `Stack` type represents a flat memory space in a virtual machine.
+class Stack {
+    /// The backing store for the stack.
+    private let storage: UnsafeMutablePointer<Word>
     
-    /// Initialize an empty memory space.
-    init() {
-        self.registers = RegisterBank(count: 12)
+    /// The maximum number of words that may be stored on the stack.
+    private let capacity: Int
+    
+    /// Initialize the stack with a given capacity and default value.
+    ///
+    /// - parameter count: The maximum number of words that may be stored on the stack.
+    /// - parameter defaultValue: The default value to place in the registers. Optional.
+    init(capacity: UInt16, defaultValue: Word = .zero) {
+        self.capacity = Int(capacity)
+        self.storage = UnsafeMutablePointer.allocate(capacity: self.capacity)
+        storage.initialize(to: defaultValue, count: self.capacity)
     }
     
-    var description: String {
-        return "registers:\n\(registers)"
+    deinit {
+        storage.deinitialize()
+        storage.deallocate(capacity: self.capacity)
+    }
+    
+    /// Access the value of a word with a specified index.
+    subscript(index: UInt16) -> Word {
+        get {
+            return storage[Int(index)]
+        }
+        set {
+            storage[Int(index)] = newValue
+        }
     }
 }

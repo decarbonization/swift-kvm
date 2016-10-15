@@ -23,12 +23,21 @@ enum OpCode: UInt16 {
     case subi
     case muli
     case divi
+    case icri
+    case dcri
     case eqi
     case neqi
     case lti
     case ltei
     case gti
     case gtei
+    case shli
+    case shri
+    case andb
+    case orb
+    case xorb
+    case or
+    case and
     
     /// Convenience initializer that raises a fatal error if
     /// the op code cannot be initialized from a given value.
@@ -57,6 +66,10 @@ enum OpCode: UInt16 {
             self = .muli
         case "divi":
             self = .divi
+        case "icri":
+            self = .icri
+        case "dcri":
+            self = .dcri
         case "eqi":
             self = .eqi
         case "neqi":
@@ -69,6 +82,20 @@ enum OpCode: UInt16 {
             self = .gti
         case "gtei":
             self = .gtei
+        case "shli":
+            self = .shli
+        case "shri":
+            self = .shri
+        case "andb":
+            self = .andb
+        case "orb":
+            self = .orb
+        case "xorb":
+            self = .xorb
+        case "or":
+            self = .or
+        case "and":
+            self = .and
         default:
             return nil
         }
