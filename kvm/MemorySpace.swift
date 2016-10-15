@@ -8,6 +8,80 @@
 
 import Foundation
 
+// MARK: - Words
+
+/// The `Word` type represents a unit of data in the virtual machine.
+///
+/// The underlying representation is a `UInt32`, however callers may
+/// choose to interpret the word as a signed integer, float, or bool.
+/// Reading a different type from what was written is undefined behavior.
+struct Word: RawRepresentable, CustomStringConvertible {
+    // MARK: - RawRepresentable
+    
+    typealias RawValue = UInt32
+    
+    /// The raw, uninterpreted value of the word.
+    var rawValue: UInt32
+    
+    /// Initialize the word with a given raw value. This is the designated initializer.
+    ///
+    /// - parameter rawValue: The raw value the word will represent.
+    init(rawValue: UInt32) {
+        self.rawValue = rawValue
+    }
+    
+    // MARK: - Initializers
+    
+    /// A word containing the value `0`.
+    static let zero = Word(rawValue: 0)
+    
+    /// Initialize the word with a given float.
+    ///
+    /// - parameter float: The float value the word will represent.
+    init(_ float: Float32) {
+        self.init(rawValue: unsafeBitCast(float, to: UInt32.self))
+    }
+    
+    /// Initialize the word with a given float.
+    ///
+    /// - parameter int: The integer value the word will represent.
+    init(_ int: Int32) {
+        self.init(rawValue: unsafeBitCast(int, to: UInt32.self))
+    }
+    
+    /// Initialize the word with a given bool.
+    ///
+    /// - parameter bool: The bool value the word will represent.
+    init(_ bool: Bool) {
+        self.init(rawValue: bool ? 1 : 0)
+    }
+    
+    // MARK: - Interpretations
+    
+    /// Returns the float interpretation of the word.
+    var float: Float32 {
+        return unsafeBitCast(rawValue, to: Float32.self)
+    }
+    
+    /// Returns the int interpretation of the word.
+    var int: Int32 {
+        return unsafeBitCast(rawValue, to: Int32.self)
+    }
+    
+    /// Returns the boolean interpretation of the word.
+    var bool: Bool {
+        return (rawValue != 0)
+    }
+    
+    // MARK: - CustomStringConvertible
+    
+    var description: String {
+        return "0x\(String(rawValue, radix: 16))"
+    }
+}
+
+// MARK: - Registers
+
 /// Enum that provides mnemonic names for registers.
 enum Register: UInt16 {
     /// The condition register. Must be non-`0` for `cond` to perform a jump.
@@ -86,7 +160,7 @@ enum Register: UInt16 {
  */
 class RegisterBank: CustomStringConvertible {
     /// The backing store for the register bank.
-    private let storage: UnsafeMutablePointer<UInt32>
+    private let storage: UnsafeMutablePointer<Word>
     
     /// The number of registers in the bank.
     private let count: Int
@@ -95,7 +169,7 @@ class RegisterBank: CustomStringConvertible {
     ///
     /// - parameter count: The number of registers to allocate.
     /// - parameter defaultValue: The default value to place in the registers. Optional.
-    init(count: UInt16, defaultValue: UInt32 = 0) {
+    init(count: UInt16, defaultValue: Word = .zero) {
         self.count = Int(count)
         self.storage = UnsafeMutablePointer.allocate(capacity: self.count)
         storage.initialize(to: defaultValue, count: self.count)
@@ -107,7 +181,7 @@ class RegisterBank: CustomStringConvertible {
     }
     
     /// Access the value of a register with a specified index.
-    subscript(index: UInt16) -> UInt32 {
+    subscript(index: UInt16) -> Word {
         get {
             return storage[Int(index)]
         }
@@ -117,7 +191,7 @@ class RegisterBank: CustomStringConvertible {
     }
     
     /// Access the value of a register by mnemonic name.
-    subscript(register: Register) -> UInt32 {
+    subscript(register: Register) -> Word {
         get {
             return self[register.rawValue]
         }
@@ -131,52 +205,27 @@ class RegisterBank: CustomStringConvertible {
         for i in 0..<count {
             let mnemonic = Register(rawValue: UInt16(i))
             let name = (mnemonic != nil) ? "\(mnemonic!)" : "r\(i)"
-            lines += "\(name) = 0x\(String(storage[i], radix: 16))\n"
+            lines += "\(name) = \(storage[i])\n"
         }
         return lines.trimmingCharacters(in: .whitespacesAndNewlines)
     }
 }
 
-/**
- *  A wrapper around the `RegisterBank` class that allows accessing
- *  values stored in the register with different type interpretations
- *  without performing any conversions.
- *
- *  This class must be used with types 32 bits in size. A fatal error
- *  will be raised at runtime if this precondition is violated.
- */
-struct RegisterWindow<Value> {
-    /// The register bank we're providing a typed window into.
-    let registerBank: RegisterBank
-    
-    /// Access the value of a register with a specified index.
-    subscript(index: UInt16) -> Value {
-        get {
-            return unsafeBitCast(registerBank[index], to: Value.self)
-        }
-        set {
-            registerBank[index] = unsafeBitCast(newValue, to: UInt32.self)
-        }
-    }
-}
+// MARK: - Address Space
 
 /**
  *  Encapsulates the memory space of a virtual machine. This includes registers and stack space.
  */
 struct MemorySpace: CustomStringConvertible {
     /// The registers of the memory space.
-    let registerBank: RegisterBank
-    
-    /// An Int32 typed window into the register bank.
-    var ints: RegisterWindow<Int32>
+    let registers: RegisterBank
     
     /// Initialize an empty memory space.
     init() {
-        self.registerBank = RegisterBank(count: 12)
-        self.ints = RegisterWindow(registerBank: registerBank)
+        self.registers = RegisterBank(count: 12)
     }
     
     var description: String {
-        return "registers:\n\(registerBank)"
+        return "registers:\n\(registers)"
     }
 }

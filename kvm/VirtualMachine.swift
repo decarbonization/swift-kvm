@@ -11,7 +11,7 @@ import Foundation
 class VirtualMachine {
     let program: [Instruction]
     var memory: MemorySpace = MemorySpace()
-    var counter: Int = 0
+    var counter: UInt32 = 0
     var isRunning: Bool = false
     
     init(program: [Instruction]) {
@@ -21,53 +21,54 @@ class VirtualMachine {
     // MARK: - Operations
     
     func fetch() -> Instruction {
-        let instruction = program[counter]
+        let instruction = program[Int(counter)]
         counter += 1
         return instruction
     }
     
-    func evaluate(instruction: Instruction) {
-        debugPrint(instruction)
+    func evaluate(instruction i: Instruction) {
+        debugPrint(i)
         
-        switch instruction.opCode {
+        let registers = memory.registers
+        switch i.opCode {
         case .noop:
             break
         case .halt:
             isRunning = false
         case .jmp:
-            counter = Int(instruction.longArg)
+            counter = i.longArg
         case .cond:
-            if memory.ints[instruction.arg2] != 0 {
-                counter = Int(instruction.longArg)
+            if registers[i.arg2].bool {
+                counter = i.longArg
             }
         case .li:
-            memory.ints[instruction.arg2] = Int32(instruction.longArg)
+            registers[i.arg2] = Word(rawValue: i.longArg)
         case .addi:
-            memory.ints[instruction.arg2] = memory.ints[instruction.arg0] + memory.ints[instruction.arg1]
+            registers[i.arg2] = Word(registers[i.arg0].int + registers[i.arg1].int)
         case .subi:
-            memory.ints[instruction.arg2] = memory.ints[instruction.arg0] - memory.ints[instruction.arg1]
+            registers[i.arg2] = Word(registers[i.arg0].int - registers[i.arg1].int)
         case .muli:
-            memory.ints[instruction.arg2] = memory.ints[instruction.arg0] * memory.ints[instruction.arg1]
+            registers[i.arg2] = Word(registers[i.arg0].int * registers[i.arg1].int)
         case .divi:
-            memory.ints[instruction.arg2] = memory.ints[instruction.arg0] / memory.ints[instruction.arg1]
+            registers[i.arg2] = Word(registers[i.arg0].int / registers[i.arg1].int)
         case .eqi:
-            let result = (memory.ints[instruction.arg0] == memory.ints[instruction.arg1])
-            memory.ints[instruction.arg2] = Int32(result ? 1 : 0)
+            let result = (registers[i.arg0].int == registers[i.arg1].int)
+            registers[i.arg2] = Word(result)
         case .neqi:
-            let result = (memory.ints[instruction.arg0] != memory.ints[instruction.arg1])
-            memory.ints[instruction.arg2] = Int32(result ? 1 : 0)
+            let result = (registers[i.arg0].int != registers[i.arg1].int)
+            registers[i.arg2] = Word(result)
         case .lti:
-            let result = (memory.ints[instruction.arg0] < memory.ints[instruction.arg1])
-            memory.ints[instruction.arg2] = Int32(result ? 1 : 0)
+            let result = (registers[i.arg0].int < registers[i.arg1].int)
+            registers[i.arg2] = Word(result)
         case .ltei:
-            let result = (memory.ints[instruction.arg0] <= memory.ints[instruction.arg1])
-            memory.ints[instruction.arg2] = Int32(result ? 1 : 0)
+            let result = (registers[i.arg0].int <= registers[i.arg1].int)
+            registers[i.arg2] = Word(result)
         case .gti:
-            let result = (memory.ints[instruction.arg0] > memory.ints[instruction.arg1])
-            memory.ints[instruction.arg2] = Int32(result ? 1 : 0)
+            let result = (registers[i.arg0].int > registers[i.arg1].int)
+            registers[i.arg2] = Word(result)
         case .gtei:
-            let result = (memory.ints[instruction.arg0] >= memory.ints[instruction.arg1])
-            memory.ints[instruction.arg2] = Int32(result ? 1 : 0)
+            let result = (registers[i.arg0].int >= registers[i.arg1].int)
+            registers[i.arg2] = Word(result)
         }
     }
     
