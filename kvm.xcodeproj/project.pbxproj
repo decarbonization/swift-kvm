@@ -10,7 +10,7 @@
 		8B2F38EF1DA9E72B00B0CCED /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B2F38EE1DA9E72B00B0CCED /* main.swift */; };
 		8B2F38F81DA9E7F100B0CCED /* Instruction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B2F38F71DA9E7F100B0CCED /* Instruction.swift */; };
 		8B2F38FA1DA9F71300B0CCED /* VirtualMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B2F38F91DA9F71300B0CCED /* VirtualMachine.swift */; };
-		8B2F38FC1DA9F88400B0CCED /* MemorySpace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B2F38FB1DA9F88400B0CCED /* MemorySpace.swift */; };
+		8B2F38FC1DA9F88400B0CCED /* Memory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B2F38FB1DA9F88400B0CCED /* Memory.swift */; };
 		8B2F38FE1DAA02F400B0CCED /* ListingParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B2F38FD1DAA02F400B0CCED /* ListingParser.swift */; };
 		8BE0600E1DAAE5820040DAF1 /* ProgramSerialization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BE0600D1DAAE5820040DAF1 /* ProgramSerialization.swift */; };
 /* End PBXBuildFile section */
@@ -32,7 +32,7 @@
 		8B2F38EE1DA9E72B00B0CCED /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		8B2F38F71DA9E7F100B0CCED /* Instruction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Instruction.swift; sourceTree = "<group>"; };
 		8B2F38F91DA9F71300B0CCED /* VirtualMachine.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VirtualMachine.swift; sourceTree = "<group>"; };
-		8B2F38FB1DA9F88400B0CCED /* MemorySpace.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MemorySpace.swift; sourceTree = "<group>"; };
+		8B2F38FB1DA9F88400B0CCED /* Memory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Memory.swift; sourceTree = "<group>"; };
 		8B2F38FD1DAA02F400B0CCED /* ListingParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ListingParser.swift; sourceTree = "<group>"; };
 		8BE0600D1DAAE5820040DAF1 /* ProgramSerialization.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProgramSerialization.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -69,7 +69,7 @@
 			children = (
 				8B2F38EE1DA9E72B00B0CCED /* main.swift */,
 				8B2F38F71DA9E7F100B0CCED /* Instruction.swift */,
-				8B2F38FB1DA9F88400B0CCED /* MemorySpace.swift */,
+				8B2F38FB1DA9F88400B0CCED /* Memory.swift */,
 				8B2F38F91DA9F71300B0CCED /* VirtualMachine.swift */,
 				8B2F38FD1DAA02F400B0CCED /* ListingParser.swift */,
 				8BE0600D1DAAE5820040DAF1 /* ProgramSerialization.swift */,
@@ -135,7 +135,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8B2F38FC1DA9F88400B0CCED /* MemorySpace.swift in Sources */,
+				8B2F38FC1DA9F88400B0CCED /* Memory.swift in Sources */,
 				8B2F38FE1DAA02F400B0CCED /* ListingParser.swift in Sources */,
 				8B2F38EF1DA9E72B00B0CCED /* main.swift in Sources */,
 				8B2F38FA1DA9F71300B0CCED /* VirtualMachine.swift in Sources */,

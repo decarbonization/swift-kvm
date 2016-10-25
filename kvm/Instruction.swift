@@ -38,6 +38,10 @@ enum OpCode: UInt16 {
     case xorb
     case or
     case and
+    case push
+    case pop
+    case call
+    case ret
     
     /// Convenience initializer that raises a fatal error if
     /// the op code cannot be initialized from a given value.
@@ -96,6 +100,14 @@ enum OpCode: UInt16 {
             self = .or
         case "and":
             self = .and
+        case "push":
+            self = .push
+        case "pop":
+            self = .pop
+        case "call":
+            self = .call
+        case "ret":
+            self = .ret
         default:
             return nil
         }
@@ -106,7 +118,8 @@ enum OpCode: UInt16 {
         switch self {
         case .jmp,
              .cond,
-             .li:
+             .li,
+             .call:
             return true
         default:
             return false

@@ -10,12 +10,15 @@ import Foundation
 
 class VirtualMachine {
     let program: [Instruction]
-    var registers: RegisterBank = RegisterBank()
+    let stack: MemoryBank
+    let registers: RegisterBank = RegisterBank()
     var counter: UInt32 = 0
     var isRunning: Bool = false
     
-    init(program: [Instruction]) {
+    init(program: [Instruction],
+         stackSize: UInt16 = 1024) {
         self.program = program
+        self.stack = MemoryBank(capacity: stackSize)
     }
     
     // MARK: - Operations
@@ -86,6 +89,19 @@ class VirtualMachine {
             registers[i.arg2] = Word(registers[i.arg0].bool || registers[i.arg1].bool)
         case .and:
             registers[i.arg2] = Word(registers[i.arg0].bool && registers[i.arg1].bool)
+        case .push:
+            stack[registers[.sp].address] = registers[i.arg0]
+            registers[.sp] = registers[.sp].next
+        case .pop:
+            registers[.sp] = registers[.sp].previous
+            registers[i.arg0] = stack[registers[.sp].address]
+        case .call:
+            stack[registers[.sp].address] = Word(rawValue: counter)
+            registers[.sp] = registers[.sp].next
+            counter = i.longArg
+        case .ret:
+            registers[.sp] = registers[.sp].previous
+            counter = stack[registers[.sp].address].rawValue
         }
     }
     

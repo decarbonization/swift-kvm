@@ -56,6 +56,13 @@ struct Word: RawRepresentable, CustomStringConvertible {
         self.init(rawValue: bool ? 1 : 0)
     }
     
+    /// Initialize the word with a given address.
+    ///
+    /// - parameter address: The address the word will represent.
+    init(_ address: UInt16) {
+        self.init(rawValue: UInt32(address))
+    }
+    
     // MARK: - Interpretations
     
     /// Returns the float interpretation of the word.
@@ -68,9 +75,22 @@ struct Word: RawRepresentable, CustomStringConvertible {
         return unsafeBitCast(rawValue, to: Int32.self)
     }
     
+    /// Returns the address interpretation of the word.
+    var address: UInt16 {
+        return UInt16(rawValue)
+    }
+    
     /// Returns the boolean interpretation of the word.
     var bool: Bool {
         return (rawValue != 0)
+    }
+    
+    var next: Word {
+        return Word(rawValue: self.rawValue + 1)
+    }
+    
+    var previous: Word {
+        return Word(rawValue: self.rawValue - 1)
     }
     
     // MARK: - CustomStringConvertible
@@ -80,15 +100,72 @@ struct Word: RawRepresentable, CustomStringConvertible {
     }
 }
 
+// MARK: - Memory
+
+/// The `MemoryBank` class represents a continuous series of words
+/// making up a simple address space in the virtual machine.
+open class MemoryBank {
+    /// The backing store for the memory.
+    private let storage: UnsafeMutablePointer<Word>
+    
+    /// The maximum number of words that may be stored in the memory.
+    let capacity: UInt16
+    
+    /// Initialize the memory with a given capacity and default value.
+    ///
+    /// - parameter capacity: The number of words to reserve space for.
+    /// - parameter initialValue: The initial value to place in the memory. Optional.
+    init(capacity: UInt16, initialValue: Word = .zero) {
+        self.capacity = capacity
+        self.storage = UnsafeMutablePointer.allocate(capacity: Int(capacity))
+        storage.initialize(to: initialValue, count: Int(capacity))
+    }
+    
+    deinit {
+        storage.deinitialize()
+        storage.deallocate(capacity: Int(capacity))
+    }
+    
+    /// Checks that a given address is valid in the context of the memory.
+    ///
+    /// - parameter address: The address to check.
+    /// - returns: The native representation of `address`.
+    /// - throws: `Fault` if `address` is not valid.
+    private func checked(address: UInt16) -> Int {
+        precondition(address < capacity, "\(address) out of range 0..<\(capacity)")
+        return Int(address)
+    }
+    
+    /// Access the value of a word with a specified address.
+    subscript(address: UInt16) -> Word {
+        get {
+            let address = checked(address: address)
+            return storage[address]
+        }
+        set {
+            let address = checked(address: address)
+            storage[address] = newValue
+        }
+    }
+    
+    /// Returns the value of a memory word, clearing the word.
+    ///
+    /// - parameter address: The address of the cell to read and clear.
+    /// - returns: The old value of the cell.
+    func consume(address: UInt16) -> Word {
+        let address = checked(address: address)
+        let value = storage[address]
+        storage[address] = .zero
+        return value
+    }
+}
+
 // MARK: - Registers
 
 /// Enum that provides mnemonic names for registers.
 enum Register: UInt16 {
     /// The condition register. Must be non-`0` for `cond` to perform a jump.
     case cond
-    
-    /// The return address register.
-    case ret
     
     /// The stack pointer register.
     case sp
@@ -121,6 +198,9 @@ enum Register: UInt16 {
     /// The nineth general purpose register.
     case gpr9
     
+    /// The tenth general purpose register.
+    case gpr10
+    
     /// The default number of registers.
     static let count: UInt16 = 12
     
@@ -129,8 +209,6 @@ enum Register: UInt16 {
         switch mnemonic {
         case "cond":
             self = .cond
-        case "ret":
-            self = .ret
         case "sp":
             self = .sp
         case "gpr1":
@@ -151,6 +229,8 @@ enum Register: UInt16 {
             self = .gpr8
         case "gpr9":
             self = .gpr9
+        case "gpr10":
+            self = .gpr10
         default:
             return nil
         }
@@ -159,36 +239,12 @@ enum Register: UInt16 {
 
 /// A fixed length sequence of `Word` values that
 /// represents registers within a virtual machine.
-class RegisterBank: CustomStringConvertible {
-    /// The backing store for the register bank.
-    private let storage: UnsafeMutablePointer<Word>
-    
-    /// The number of registers in the bank.
-    private let count: Int
-    
-    /// Initialize the register bank with a given count and default value.
+final class RegisterBank: MemoryBank, CustomStringConvertible {
+    /// Initialize the register bank with an optional initial register value.
     ///
-    /// - parameter count: The number of registers to allocate.
-    /// - parameter defaultValue: The default value to place in the registers. Optional.
-    init(count: UInt16 = Register.count, defaultValue: Word = .zero) {
-        self.count = Int(count)
-        self.storage = UnsafeMutablePointer.allocate(capacity: self.count)
-        storage.initialize(to: defaultValue, count: self.count)
-    }
-    
-    deinit {
-        storage.deinitialize()
-        storage.deallocate(capacity: self.count)
-    }
-    
-    /// Access the value of a register with a specified index.
-    subscript(index: UInt16) -> Word {
-        get {
-            return storage[Int(index)]
-        }
-        set {
-            storage[Int(index)] = newValue
-        }
+    /// - parameter initialValue: The initial value to store in the registers. Optional.
+    init(initialValue: Word = .zero) {
+        super.init(capacity: Register.count, initialValue: initialValue)
     }
     
     /// Access the value of a register by mnemonic name.
@@ -203,69 +259,19 @@ class RegisterBank: CustomStringConvertible {
     
     /// Returns the value of a register, clearing the register.
     ///
-    /// - parameter index: The index of the register to read and clear.
-    /// - returns: The old value of the register.
-    func consume(index: UInt16) -> Word {
-        let index = Int(index)
-        let value = storage[index]
-        storage[index] = .zero
-        return value
-    }
-    
-    /// Returns the value of a register, clearing the register.
-    ///
     /// - parameter register: The mnemonic of the register to read and clear.
     /// - returns: The old value of the register.
     func consume(register: Register) -> Word {
-        let index = Int(register.rawValue)
-        let value = storage[index]
-        storage[index] = .zero
-        return value
+        return consume(address: register.rawValue)
     }
     
     var description: String {
         var lines = ""
-        for i in 0..<count {
-            let mnemonic = Register(rawValue: UInt16(i))
+        for i in 0..<capacity {
+            let mnemonic = Register(rawValue: i)
             let name = (mnemonic != nil) ? "\(mnemonic!)" : "r\(i)"
-            lines += "\(name) = \(storage[i])\n"
+            lines += "\(name) = \(self[i])\n"
         }
         return lines.trimmingCharacters(in: .whitespacesAndNewlines)
-    }
-}
-
-// MARK: - Address Space
-
-/// The `Stack` type represents a flat memory space in a virtual machine.
-class Stack {
-    /// The backing store for the stack.
-    private let storage: UnsafeMutablePointer<Word>
-    
-    /// The maximum number of words that may be stored on the stack.
-    private let capacity: Int
-    
-    /// Initialize the stack with a given capacity and default value.
-    ///
-    /// - parameter count: The maximum number of words that may be stored on the stack.
-    /// - parameter defaultValue: The default value to place in the registers. Optional.
-    init(capacity: UInt16, defaultValue: Word = .zero) {
-        self.capacity = Int(capacity)
-        self.storage = UnsafeMutablePointer.allocate(capacity: self.capacity)
-        storage.initialize(to: defaultValue, count: self.capacity)
-    }
-    
-    deinit {
-        storage.deinitialize()
-        storage.deallocate(capacity: self.capacity)
-    }
-    
-    /// Access the value of a word with a specified index.
-    subscript(index: UInt16) -> Word {
-        get {
-            return storage[Int(index)]
-        }
-        set {
-            storage[Int(index)] = newValue
-        }
     }
 }

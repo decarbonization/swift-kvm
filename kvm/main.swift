@@ -10,15 +10,15 @@ import Foundation
 
 let listing = (
     "_main:\n" +
-    "    li 2i, $gpr1\n" +
-    "    li 3i, $gpr2\n" +
-    "    lti $gpr1, $gpr2, $cond\n" +
-    "    cond @load42, $cond\n" +
-    "    jmp @exit\n" +
-    "load42:\n" +
-    "    li 42i, $gpr3\n" +
+    "   li 2i, $gpr1\n" +
+    "   li 8i, $gpr2\n" +
+    "   call @_add\n" +
+    "   jmp @exit\n" +
+    "_add:\n" +
+    "   addi $gpr1, $gpr2, $gpr3\n" +
+    "   ret\n" +
     "exit:\n" +
-    "    halt"
+    "   halt"
 )
 let testProgram = try! parse(listing: listing)
 let vm = VirtualMachine(program: testProgram)
