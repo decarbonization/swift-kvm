@@ -8,30 +8,30 @@
 
 import Foundation
 
-class VirtualMachine {
+struct VirtualMachine {
     let program: [Instruction]
-    let stack: MemoryBank
-    let registers: RegisterBank = RegisterBank()
+    var stack: AddressSpace
+    var registers: AddressSpace
     var counter: UInt32 = 0
     var isRunning: Bool = false
     
     init(program: [Instruction],
          stackSize: UInt16 = 1024) {
         self.program = program
-        self.stack = MemoryBank(capacity: stackSize)
+        self.registers = AddressSpace(size: Register.count)
+        self.stack = AddressSpace(size: stackSize)
     }
     
     // MARK: - Operations
     
-    func fetch() -> Instruction {
+    mutating func fetch() -> Instruction {
         let instruction = program[Int(counter)]
+        print("\(counter) \(instruction)")
         counter += 1
         return instruction
     }
     
-    func evaluate(instruction i: Instruction) {
-        debugPrint(i)
-        
+    mutating func evaluate(instruction i: Instruction) {
         switch i.opCode {
         case .noop:
             break
@@ -105,7 +105,7 @@ class VirtualMachine {
         }
     }
     
-    func run() {
+    mutating func run() {
         counter = 0
         isRunning = true
         
@@ -113,6 +113,6 @@ class VirtualMachine {
             let next = fetch()
             evaluate(instruction: next)
         }
-        debugPrint(registers)
+        print(registers.registerDescription)
     }
 }

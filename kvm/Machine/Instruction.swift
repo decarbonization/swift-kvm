@@ -9,9 +9,9 @@
 import Foundation
 
 /**
- *  Enum that describes all possible operation codes that may be packed into an instruction.
- *
- *  The listing names match the intended mnemonics for the virtual machine.
+ Enum that describes all possible operation codes that may be packed into an instruction.
+ 
+ The listing names match the intended mnemonics for the virtual machine.
  */
 enum OpCode: UInt16 {
     case noop = 0
@@ -128,54 +128,49 @@ enum OpCode: UInt16 {
 }
 
 /**
- *  In memory representation of instructions for the virtual machine.
- *  Each instruction is packed into an unsigned 64 bits integer.
- *
- *  0xAAAABBBBCCCCDDDD
- *    |   |   |   |
- *    |   |   |   +----- arg2
- *    |   |   +--------- arg1
- *    |   +------------- arg0
- *    +----------------- opCode
+ In memory representation of instructions for the virtual machine.
+ Each instruction is packed into an unsigned 64 bits integer.
+ 
+ ```
+ +--------------------------------+
+ | 0xAAAA_BBBB_CCCC_DDDD          |
+ |   |    |    |    |             |
+ |   |    |    |    +----- arg2   |
+ |   |    |    +---------- arg1   |
+ |   |    +--------------- arg0   |
+ |   +-------------------- opCode |
+ +--------------------------------+
+ ```
  */
-struct Instruction: RawRepresentable, CustomStringConvertible, Hashable {
-    typealias RawValue = UInt64
-    
-    let rawValue: UInt64
-    
+struct Instruction: RawRepresentable, Hashable, CustomStringConvertible {
     // MARK: - Initializers
     
-    /// Initialize the instruction with a raw value. This is the designated initializer.
-    ///
-    /// - parameter rawValue: The raw representation of the instruction.
-    init(rawValue: UInt64) {
-        self.rawValue = rawValue
-    }
+    /**
+    Initialize the instruction with an op code and all arguments.
     
-    /// Initialize the instruction with an op code and all arguments.
-    ///
-    /// - parameter opCode: The operation code of the instruction.
-    /// - parameter arg0: The first argument.
-    /// - parameter arg1: The first argument.
-    /// - parameter arg2: The first argument.
+    - parameter opCode: Operation code of the instruction.
+    - parameter arg0: Zeroth argument.
+    - parameter arg1: First argument.
+    - parameter arg2: Second argument.
+     */
     init(opCode: OpCode,
          arg0: UInt16,
          arg1: UInt16,
          arg2: UInt16) {
-        let packedWord = (
-            (UInt64(arg2)) |
-            (UInt64(arg1) << 16) |
-            (UInt64(arg0) << 32) |
-            (UInt64(opCode.rawValue) << 48)
-        )
-        self.init(rawValue: packedWord)
+        let opCodeBits: UInt64 = (UInt64(opCode.rawValue) << 48)
+        let arg0Bits: UInt64 = (UInt64(arg0) << 32)
+        let arg1Bits: UInt64 = (UInt64(arg1) << 16)
+        let arg2Bits: UInt64 = (UInt64(arg2) << 0)
+        self.init(rawValue: (arg2Bits | arg1Bits | arg0Bits | opCodeBits))
     }
     
-    /// Initialize the instruction with an op code, long argument, and extra argument.
-    ///
-    /// - parameter opCode: The operation code of the instruction.
-    /// - parameter longArg: The long argument stored in `arg0` and `arg1`.
-    /// - parameter arg2: The extra argument.
+    /**
+     Initialize the instruction with an op code, long argument, and extra argument.
+     
+     - parameter opCode: Operation code of the instruction.
+     - parameter longArg: Long argument stored in `arg0` and `arg1`.
+     - parameter arg2: Extra argument.
+     */
     init(opCode: OpCode,
          longArg: UInt32,
          arg2: UInt16) {
@@ -185,16 +180,20 @@ struct Instruction: RawRepresentable, CustomStringConvertible, Hashable {
                   arg2: arg2)
     }
     
-    /// Initialize the instruction with an op code, and set all args to `0`.
-    ///
-    /// - parameter opCode: The operation code of the instruction.
+    /**
+     Initialize the instruction with an op code, and set all args to `0`.
+     
+     - parameter opCode: Operation code of the instruction.
+     */
     init(opCode: OpCode) {
         self.init(opCode: opCode, arg0: 0, arg1: 0, arg2: 0)
     }
     
-    /// Attempt to initialize the instruction with the contents of a data object.
-    ///
-    /// - parameter data: The data to read the instruction from.
+    /**
+    Attempt to initialize the instruction with the contents of a data object.
+    
+    - parameter data: Data to read the instruction from.
+     */
     init?(data: Data) {
         guard data.count == MemoryLayout<RawValue>.size else {
             return nil
@@ -210,45 +209,70 @@ struct Instruction: RawRepresentable, CustomStringConvertible, Hashable {
     
     // MARK: - Properties
     
-    /// The operation code of the instruction.
+    /**
+     Operation code of the instruction interpreted by the virtual machine.
+     */
     var opCode: OpCode {
         return OpCode(UInt16((rawValue >> 48) & 0x000000000000FFFF))
     }
     
-    /// The first argument of the instruction.
+    /**
+     Zeroth argument of the instruction. Exact meaning depends on `opCode`.
+     */
     var arg0: UInt16 {
         return UInt16((rawValue >> 32) & 0x000000000000FFFF)
     }
     
-    /// The second argument of the instruction.
+    /**
+     First argument of the instruction. Exact meaning depends on `opCode`.
+     */
     var arg1: UInt16 {
         return UInt16((rawValue >> 16) & 0x000000000000FFFF)
     }
     
-    /// The third argument of the instruction.
+    /**
+     Second argument of the instruction. Exact meaning depends on `opCode`.
+     */
     var arg2: UInt16 {
         return UInt16(rawValue & 0x000000000000FFFF)
     }
     
-    /// The long argument of the instruction, a combination of `arg0` and `arg1`.
+    /**
+     Long argument interpretation of the instruction. Made by bit ORing the
+     values of `arg0` and `arg1` together. Exact meaning depends on `opCode`.
+     */
     var longArg: UInt32 {
         return (UInt32(arg1) | (UInt32(arg0) << 16))
     }
     
-    /// Returns a serializable data representation of the instruction.
+    /**
+     Serializable representation of the instruction.
+     */
     var dataRepresentation: Data {
         var value = rawValue
         return Data(bytes: &value, count: MemoryLayout<RawValue>.size)
     }
     
-    // MARK: - Identity
+    // MARK: - RawRepresentable
+    
+    typealias RawValue = UInt64
+    
+    var rawValue: UInt64
+    
+    init(rawValue: UInt64) {
+        self.rawValue = rawValue
+    }
+    
+    // MARK: - Hashable
     
     var hashValue: Int {
         return Int(rawValue)
     }
     
+    // MARK: - CustomStringConvertible
+    
     var description: String {
-        if (opCode.usesLongArg) {
+        if opCode.usesLongArg {
             return ("\(opCode) " +
                     "0x\(String(longArg, radix: 16)), " +
                     "0x\(String(arg2, radix: 16))")

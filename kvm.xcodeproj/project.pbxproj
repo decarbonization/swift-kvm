@@ -7,10 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8B0BD60F1FB252900036479C /* Word.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B0BD60E1FB252900036479C /* Word.swift */; };
+		8B0BD6171FB2551A0036479C /* AutoPointer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B0BD6161FB2551A0036479C /* AutoPointer.swift */; };
+		8B0BD6191FB2591D0036479C /* AddressSpace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B0BD6181FB2591D0036479C /* AddressSpace.swift */; };
 		8B2F38EF1DA9E72B00B0CCED /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B2F38EE1DA9E72B00B0CCED /* main.swift */; };
 		8B2F38F81DA9E7F100B0CCED /* Instruction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B2F38F71DA9E7F100B0CCED /* Instruction.swift */; };
 		8B2F38FA1DA9F71300B0CCED /* VirtualMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B2F38F91DA9F71300B0CCED /* VirtualMachine.swift */; };
-		8B2F38FC1DA9F88400B0CCED /* Memory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B2F38FB1DA9F88400B0CCED /* Memory.swift */; };
+		8B2F38FC1DA9F88400B0CCED /* AddressSpace+Registers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B2F38FB1DA9F88400B0CCED /* AddressSpace+Registers.swift */; };
 		8B2F38FE1DAA02F400B0CCED /* ListingParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B2F38FD1DAA02F400B0CCED /* ListingParser.swift */; };
 		8BE0600E1DAAE5820040DAF1 /* ProgramSerialization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BE0600D1DAAE5820040DAF1 /* ProgramSerialization.swift */; };
 /* End PBXBuildFile section */
@@ -28,11 +31,14 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		8B0BD60E1FB252900036479C /* Word.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Word.swift; sourceTree = "<group>"; };
+		8B0BD6161FB2551A0036479C /* AutoPointer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoPointer.swift; sourceTree = "<group>"; };
+		8B0BD6181FB2591D0036479C /* AddressSpace.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressSpace.swift; sourceTree = "<group>"; };
 		8B2F38EB1DA9E72B00B0CCED /* kvm */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = kvm; sourceTree = BUILT_PRODUCTS_DIR; };
 		8B2F38EE1DA9E72B00B0CCED /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		8B2F38F71DA9E7F100B0CCED /* Instruction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Instruction.swift; sourceTree = "<group>"; };
 		8B2F38F91DA9F71300B0CCED /* VirtualMachine.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VirtualMachine.swift; sourceTree = "<group>"; };
-		8B2F38FB1DA9F88400B0CCED /* Memory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Memory.swift; sourceTree = "<group>"; };
+		8B2F38FB1DA9F88400B0CCED /* AddressSpace+Registers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "AddressSpace+Registers.swift"; sourceTree = "<group>"; };
 		8B2F38FD1DAA02F400B0CCED /* ListingParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ListingParser.swift; sourceTree = "<group>"; };
 		8BE0600D1DAAE5820040DAF1 /* ProgramSerialization.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProgramSerialization.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -48,6 +54,42 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		8B0BD61A1FB25D240036479C /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				8B0BD6161FB2551A0036479C /* AutoPointer.swift */,
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
+		8B0BD61B1FB25D2B0036479C /* Memory */ = {
+			isa = PBXGroup;
+			children = (
+				8B0BD60E1FB252900036479C /* Word.swift */,
+				8B0BD6181FB2591D0036479C /* AddressSpace.swift */,
+				8B2F38FB1DA9F88400B0CCED /* AddressSpace+Registers.swift */,
+			);
+			path = Memory;
+			sourceTree = "<group>";
+		};
+		8B0BD61C1FB25D3A0036479C /* Machine */ = {
+			isa = PBXGroup;
+			children = (
+				8B2F38F71DA9E7F100B0CCED /* Instruction.swift */,
+				8B2F38F91DA9F71300B0CCED /* VirtualMachine.swift */,
+			);
+			path = Machine;
+			sourceTree = "<group>";
+		};
+		8B0BD61D1FB25D430036479C /* Listings */ = {
+			isa = PBXGroup;
+			children = (
+				8B2F38FD1DAA02F400B0CCED /* ListingParser.swift */,
+				8BE0600D1DAAE5820040DAF1 /* ProgramSerialization.swift */,
+			);
+			path = Listings;
+			sourceTree = "<group>";
+		};
 		8B2F38E21DA9E72A00B0CCED = {
 			isa = PBXGroup;
 			children = (
@@ -68,11 +110,10 @@
 			isa = PBXGroup;
 			children = (
 				8B2F38EE1DA9E72B00B0CCED /* main.swift */,
-				8B2F38F71DA9E7F100B0CCED /* Instruction.swift */,
-				8B2F38FB1DA9F88400B0CCED /* Memory.swift */,
-				8B2F38F91DA9F71300B0CCED /* VirtualMachine.swift */,
-				8B2F38FD1DAA02F400B0CCED /* ListingParser.swift */,
-				8BE0600D1DAAE5820040DAF1 /* ProgramSerialization.swift */,
+				8B0BD61B1FB25D2B0036479C /* Memory */,
+				8B0BD61C1FB25D3A0036479C /* Machine */,
+				8B0BD61A1FB25D240036479C /* Utilities */,
+				8B0BD61D1FB25D430036479C /* Listings */,
 			);
 			path = kvm;
 			sourceTree = "<group>";
@@ -104,11 +145,12 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0800;
-				LastUpgradeCheck = 0800;
+				LastUpgradeCheck = 0910;
 				ORGANIZATIONNAME = "Kevin MacWhinnie";
 				TargetAttributes = {
 					8B2F38EA1DA9E72B00B0CCED = {
 						CreatedOnToolsVersion = 8.0;
+						LastSwiftMigration = 0910;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -135,11 +177,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8B2F38FC1DA9F88400B0CCED /* Memory.swift in Sources */,
+				8B2F38FC1DA9F88400B0CCED /* AddressSpace+Registers.swift in Sources */,
+				8B0BD60F1FB252900036479C /* Word.swift in Sources */,
 				8B2F38FE1DAA02F400B0CCED /* ListingParser.swift in Sources */,
 				8B2F38EF1DA9E72B00B0CCED /* main.swift in Sources */,
 				8B2F38FA1DA9F71300B0CCED /* VirtualMachine.swift in Sources */,
+				8B0BD6191FB2591D0036479C /* AddressSpace.swift in Sources */,
 				8B2F38F81DA9E7F100B0CCED /* Instruction.swift in Sources */,
+				8B0BD6171FB2551A0036479C /* AutoPointer.swift in Sources */,
 				8BE0600E1DAAE5820040DAF1 /* ProgramSerialization.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -156,7 +201,9 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
@@ -164,7 +211,12 @@
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_SUSPICIOUS_MOVES = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -204,7 +256,9 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
@@ -212,7 +266,12 @@
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_SUSPICIOUS_MOVES = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -232,6 +291,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = macosx;
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 			};
 			name = Release;
 		};
@@ -239,7 +299,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 3.0;
+				SWIFT_VERSION = 4.0;
 			};
 			name = Debug;
 		};
@@ -247,7 +307,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 3.0;
+				SWIFT_VERSION = 4.0;
 			};
 			name = Release;
 		};
