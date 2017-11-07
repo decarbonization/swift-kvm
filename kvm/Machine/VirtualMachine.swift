@@ -9,29 +9,79 @@
 import Foundation
 
 struct VirtualMachine {
-    let program: [Instruction]
-    var stack: AddressSpace
-    var registers: AddressSpace
-    var counter: UInt32 = 0
-    var isRunning: Bool = false
+    // MARK: - Initializers
     
-    init(program: [Instruction],
+    /**
+     Initialize the virtual machine with all required properties.
+     
+     - parameter program: Program that the virtual machine will interpret.
+     - parameter stackSize: SIze of the stack that will be provided to `program`.
+     */
+    init(program: Program,
          stackSize: UInt16 = 1024) {
         self.program = program
         self.registers = AddressSpace(size: Register.count)
         self.stack = AddressSpace(size: stackSize)
     }
     
-    // MARK: - Operations
+    // MARK: - Properties
     
+    
+    /**
+     Program loaded into the virtual machine.
+     */
+    let program: Program
+    
+    /**
+     Stack address space provided to the pgoram loaded into the virtual machine.
+     */
+    var stack: AddressSpace
+    
+    /**
+     Register address space provided to the program loaded into the virtual machine.
+     */
+    var registers: AddressSpace
+    
+    /**
+     Current position in the program.
+     
+     This position will be changed in response to an instruction,
+     or by the program being interpreted linearly.
+     */
+    var counter: UInt32 = 0
+    
+    /**
+     Controls whether or not the virtual machine is running.
+     
+     A virtual machine is started by calling the `run()` method,
+     and may be stopped by the program loaded into it.
+     */
+    var isRunning: Bool = false
+    
+    // MARK: - Running
+    
+    /**
+     Fetches the instruction at the position specified by the
+     counter, advancing the position by one for the next fetch.
+     
+     - returns: The next instruction to interpret.
+     */
     mutating func fetch() -> Instruction {
-        let instruction = program[Int(counter)]
-        print("\(counter) \(instruction)")
+        let instruction = program[counter]
         counter += 1
         return instruction
     }
     
-    mutating func evaluate(instruction i: Instruction) {
+    /**
+     Executes a given instruction from the loaded program
+     using the registers and stack of the virtual machine.
+     
+     This method may trigger any number of side effects, including
+     changing the program counter, or triggering syscalls.
+     
+     - parameter i: Instruction for the virutal machine to interpret.
+     */
+    mutating func execute(instruction i: Instruction) {
         switch i.opCode {
         case .noop:
             break
@@ -105,14 +155,22 @@ struct VirtualMachine {
         }
     }
     
+    /**
+     Execute the program loaded into the virtual machine.
+     
+     This method will block the calling thread until the virtual
+     machine has completed execution of the program.
+     
+     To determine what work has been performed by the program loaded
+     into the virtual machine, the registers and stack may be read.
+     */
     mutating func run() {
         counter = 0
         isRunning = true
         
         while isRunning {
             let next = fetch()
-            evaluate(instruction: next)
+            execute(instruction: next)
         }
-        print(registers.registerDescription)
     }
 }

@@ -1,5 +1,5 @@
 //
-//  ListingParser.swift
+//  Program+Parsing.swift
 //  kvm
 //
 //  Created by Kevin MacWhinnie on 10/8/16.
@@ -252,10 +252,38 @@ private func consumeJumps(on lineNumber: Int,
     }
 }
 
+// MARK: -
+
+/**
+ Parse the contents of a string containing a byte code listing.
+ 
+ - parameter listing: A string containing a byte code listing.
+ - returns: An array of instructions parsed from the listing.
+ - throws: `ListingParseError` if the listing is malformed.
+ */
+private func parse(listing: String) throws -> [Instruction] {
+    let lines = allLines(from: listing)
+    var jumpTable = JumpTable()
+    return Array(
+        try lines.filter { line in !isComment(line) }
+            .enumerated()
+            .filter { lineNumber, contents in
+                !consumeJumps(on: lineNumber,
+                              from: contents,
+                              with: &jumpTable)
+            }
+            .map { lineNumber, contents in
+                try parseInstruction(on: lineNumber,
+                                     from: contents,
+                                     with: jumpTable)
+        }
+    )
+}
+
 // MARK: - API
 
 /**
- Enum that describes the errors that can occur when parsing a bytecode listing.
+ Enum that describes the errors that can occur when parsing a byte code listing.
  */
 enum ListingParseError: Error {
     /// Indicates an unknown mnemonic was encountered.
@@ -280,28 +308,14 @@ enum ListingParseError: Error {
     case badJumpLabel(line: Int, label: String)
 }
 
-/**
- Parse the contents of a string containing a bytecode listing.
- 
- - parameter listing: A string containing a bytecode listing.
- - returns: An array of instructions parsed from the listing.
- - throws: `ListingParseError` if the listing is malformed.
- */
-func parse(listing: String) throws -> [Instruction] {
-    let lines = allLines(from: listing)
-    var jumpTable = JumpTable()
-    return Array(
-        try lines.filter { line in !isComment(line) }
-                 .enumerated()
-                 .filter { lineNumber, contents in
-                     !consumeJumps(on: lineNumber,
-                                   from: contents,
-                                   with: &jumpTable)
-                 }
-                 .map { lineNumber, contents in
-                     try parseInstruction(on: lineNumber,
-                                          from: contents,
-                                          with: jumpTable)
-                 }
-    )
+extension Program {
+    /**
+     Initialize the instruction stream by parsing a given listing string.
+     
+     - parameter listing: String containing a byte code listing.
+     - throws: `ListingParseError` if the listing is malformed.
+     */
+    init(listing: String) throws {
+        self.init(try parse(listing: listing))
+    }
 }

@@ -20,6 +20,8 @@ _add:
 exit:
    halt
 """
-let testProgram = try! parse(listing: listing)
+let testProgram = try! Program(listing: listing)
+print(testProgram)
 var vm = VirtualMachine(program: testProgram)
 vm.run()
+print(vm.registers.registerDescription)
