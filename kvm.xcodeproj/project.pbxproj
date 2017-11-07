@@ -11,6 +11,7 @@
 		8B0BD6171FB2551A0036479C /* AutoPointer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B0BD6161FB2551A0036479C /* AutoPointer.swift */; };
 		8B0BD6191FB2591D0036479C /* AddressSpace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B0BD6181FB2591D0036479C /* AddressSpace.swift */; };
 		8B0BD6211FB261FC0036479C /* Program.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B0BD6201FB261FC0036479C /* Program.swift */; };
+		8B0BD6231FB2683C0036479C /* SystemCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B0BD6221FB2683C0036479C /* SystemCall.swift */; };
 		8B2F38EF1DA9E72B00B0CCED /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B2F38EE1DA9E72B00B0CCED /* main.swift */; };
 		8B2F38F81DA9E7F100B0CCED /* Instruction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B2F38F71DA9E7F100B0CCED /* Instruction.swift */; };
 		8B2F38FA1DA9F71300B0CCED /* VirtualMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B2F38F91DA9F71300B0CCED /* VirtualMachine.swift */; };
@@ -36,6 +37,7 @@
 		8B0BD6161FB2551A0036479C /* AutoPointer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoPointer.swift; sourceTree = "<group>"; };
 		8B0BD6181FB2591D0036479C /* AddressSpace.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressSpace.swift; sourceTree = "<group>"; };
 		8B0BD6201FB261FC0036479C /* Program.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Program.swift; sourceTree = "<group>"; };
+		8B0BD6221FB2683C0036479C /* SystemCall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemCall.swift; sourceTree = "<group>"; };
 		8B2F38EB1DA9E72B00B0CCED /* kvm */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = kvm; sourceTree = BUILT_PRODUCTS_DIR; };
 		8B2F38EE1DA9E72B00B0CCED /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		8B2F38F71DA9E7F100B0CCED /* Instruction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Instruction.swift; sourceTree = "<group>"; };
@@ -78,6 +80,7 @@
 			isa = PBXGroup;
 			children = (
 				8B2F38F71DA9E7F100B0CCED /* Instruction.swift */,
+				8B0BD6221FB2683C0036479C /* SystemCall.swift */,
 				8B2F38F91DA9F71300B0CCED /* VirtualMachine.swift */,
 			);
 			path = Machine;
@@ -187,6 +190,7 @@
 				8B2F38FA1DA9F71300B0CCED /* VirtualMachine.swift in Sources */,
 				8B0BD6191FB2591D0036479C /* AddressSpace.swift in Sources */,
 				8B2F38F81DA9E7F100B0CCED /* Instruction.swift in Sources */,
+				8B0BD6231FB2683C0036479C /* SystemCall.swift in Sources */,
 				8B0BD6171FB2551A0036479C /* AutoPointer.swift in Sources */,
 				8BE0600E1DAAE5820040DAF1 /* Program+Serialization.swift in Sources */,
 				8B0BD6211FB261FC0036479C /* Program.swift in Sources */,

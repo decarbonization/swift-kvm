@@ -42,6 +42,7 @@ enum OpCode: UInt16 {
     case pop
     case call
     case ret
+    case sys
     
     /// Convenience initializer that raises a fatal error if
     /// the op code cannot be initialized from a given value.
@@ -108,6 +109,8 @@ enum OpCode: UInt16 {
             self = .call
         case "ret":
             self = .ret
+        case "sys":
+            self = .sys
         default:
             return nil
         }
@@ -119,7 +122,8 @@ enum OpCode: UInt16 {
         case .jmp,
              .cond,
              .li,
-             .call:
+             .call,
+             .sys:
             return true
         default:
             return false

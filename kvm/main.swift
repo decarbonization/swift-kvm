@@ -22,6 +22,6 @@ exit:
 """
 let testProgram = try! Program(listing: listing)
 print(testProgram)
-var vm = VirtualMachine(program: testProgram)
+var vm = VirtualMachine(program: testProgram, systemCalls: [:])
 vm.run()
 print(vm.registers.registerDescription)

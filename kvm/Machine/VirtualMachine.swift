@@ -15,11 +15,14 @@ struct VirtualMachine {
      Initialize the virtual machine with all required properties.
      
      - parameter program: Program that the virtual machine will interpret.
+     - parameter systemCalls: System calls available to the virtual machine's program.
      - parameter stackSize: SIze of the stack that will be provided to `program`.
      */
     init(program: Program,
+         systemCalls: SystemCallTable,
          stackSize: UInt16 = 1024) {
         self.program = program
+        self.systemCalls = systemCalls
         self.registers = AddressSpace(size: Register.count)
         self.stack = AddressSpace(size: stackSize)
     }
@@ -31,6 +34,11 @@ struct VirtualMachine {
      Program loaded into the virtual machine.
      */
     let program: Program
+    
+    /**
+     System calls available to the virtual machine's program
+     */
+    let systemCalls: SystemCallTable
     
     /**
      Stack address space provided to the pgoram loaded into the virtual machine.
@@ -152,6 +160,8 @@ struct VirtualMachine {
         case .ret:
             registers[.sp] = registers[.sp].previous
             counter = stack[registers[.sp].address].rawValue
+        case .sys:
+            systemCalls[i.longArg]!(&registers, &stack)
         }
     }
     
