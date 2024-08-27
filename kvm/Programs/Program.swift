@@ -41,7 +41,7 @@ struct Program: CustomStringConvertible {
      */
     subscript(_ index: UInt32) -> Instruction {
         get {
-            return listing[Int(index)]
+            listing[Int(index)]
         }
         set {
             listing[Int(index)] = newValue
@@ -51,10 +51,11 @@ struct Program: CustomStringConvertible {
     // MARK: - CustomStringConvertible
     
     var description: String {
-        var lines = [String]()
-        for (line, instruction) in listing.enumerated() {
-            lines.append("\(line + 1) \(instruction)")
-        }
-        return lines.joined(separator: "\n")
+        listing.enumerated()
+            .lazy
+            .map { (line, instruction) in
+                "\(line + 1) \(instruction)"
+            }
+            .joined(separator: "\n")
     }
 }

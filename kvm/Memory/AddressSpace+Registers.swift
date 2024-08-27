@@ -94,7 +94,7 @@ extension AddressSpace {
      */
     subscript(register: Register) -> Word {
         get {
-            return self[register.rawValue]
+            self[register.rawValue]
         }
         set {
             self[register.rawValue] = newValue

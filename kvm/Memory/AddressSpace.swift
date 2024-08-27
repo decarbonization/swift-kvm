@@ -21,7 +21,7 @@ struct AddressSpace: CustomStringConvertible {
      - parameter size: Number of words that may be stored in the address space.
      */
     init(size: UInt16) {
-        self.storage = AutoPointer(count: Int(size), initialValue: .zero)
+        storage = AutoPointer(count: Int(size), initialValue: .zero)
     }
     
     // MARK: - Storage
@@ -39,7 +39,7 @@ struct AddressSpace: CustomStringConvertible {
         guard !isKnownUniquelyReferenced(&storage) else {
             return
         }
-        self.storage = AutoPointer(copying: storage)
+        storage = AutoPointer(copying: storage)
     }
     
     // MARK: - Properties
@@ -48,7 +48,7 @@ struct AddressSpace: CustomStringConvertible {
      Number of words available in the address space.
      */
     var size: UInt16 {
-        return UInt16(storage.count)
+        UInt16(storage.count)
     }
     
     // MARK: - Accessing Words
@@ -61,10 +61,10 @@ struct AddressSpace: CustomStringConvertible {
      */
     subscript(_ address: UInt16) -> Word {
         get {
-            return storage[Int(address)]
+            storage[Int(address)]
         }
         set {
-            self.copyIfNeeded()
+            copyIfNeeded()
             storage[Int(address)] = newValue
         }
     }

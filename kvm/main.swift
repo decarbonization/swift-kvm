@@ -20,7 +20,7 @@ _add:
 exit:
    halt
 """
-let testProgram = try! Program(listing: listing)
+let testProgram = try Program(listing: listing)
 print(testProgram)
 var vm = VirtualMachine(program: testProgram, systemCalls: [:])
 vm.run()

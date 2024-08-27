@@ -204,8 +204,10 @@ struct Instruction: RawRepresentable, Hashable, CustomStringConvertible {
         }
         
         var value: UInt64 = 0
-        let buffer = UnsafeMutableBufferPointer(start: &value, count: 1)
-        guard data.copyBytes(to: buffer) == data.count else {
+        let copiedWholeValue = withUnsafeMutableBytes(of: &value) { buffer in
+            data.copyBytes(to: buffer) == data.count
+        }
+        guard copiedWholeValue else {
             return nil
         }
         self.init(rawValue: value)
@@ -217,28 +219,28 @@ struct Instruction: RawRepresentable, Hashable, CustomStringConvertible {
      Operation code of the instruction interpreted by the virtual machine.
      */
     var opCode: OpCode {
-        return OpCode(UInt16((rawValue >> 48) & 0x000000000000FFFF))
+        OpCode(UInt16((rawValue >> 48) & 0x000000000000FFFF))
     }
     
     /**
      Zeroth argument of the instruction. Exact meaning depends on `opCode`.
      */
     var arg0: UInt16 {
-        return UInt16((rawValue >> 32) & 0x000000000000FFFF)
+        UInt16((rawValue >> 32) & 0x000000000000FFFF)
     }
     
     /**
      First argument of the instruction. Exact meaning depends on `opCode`.
      */
     var arg1: UInt16 {
-        return UInt16((rawValue >> 16) & 0x000000000000FFFF)
+        UInt16((rawValue >> 16) & 0x000000000000FFFF)
     }
     
     /**
      Second argument of the instruction. Exact meaning depends on `opCode`.
      */
     var arg2: UInt16 {
-        return UInt16(rawValue & 0x000000000000FFFF)
+        UInt16(rawValue & 0x000000000000FFFF)
     }
     
     /**
@@ -246,20 +248,19 @@ struct Instruction: RawRepresentable, Hashable, CustomStringConvertible {
      values of `arg0` and `arg1` together. Exact meaning depends on `opCode`.
      */
     var longArg: UInt32 {
-        return (UInt32(arg1) | (UInt32(arg0) << 16))
+        (UInt32(arg1) | (UInt32(arg0) << 16))
     }
     
     /**
      Serializable representation of the instruction.
      */
     var dataRepresentation: Data {
-        var value = rawValue
-        return Data(bytes: &value, count: MemoryLayout<RawValue>.size)
+        withUnsafePointer(to: rawValue) { value in
+            Data(bytes: value, count: MemoryLayout<RawValue>.size)
+        }
     }
     
     // MARK: - RawRepresentable
-    
-    typealias RawValue = UInt64
     
     var rawValue: UInt64
     
@@ -270,7 +271,7 @@ struct Instruction: RawRepresentable, Hashable, CustomStringConvertible {
     // MARK: - Hashable
     
     var hashValue: Int {
-        return Int(rawValue)
+        Int(rawValue)
     }
     
     // MARK: - CustomStringConvertible

@@ -54,7 +54,7 @@ private let argSeparator: String = ","
  - returns: A copy of `string` with whitespace trimmed.
  */
 private func trimWhitespace(from string: String) -> String {
-    return string.trimmingCharacters(in: .whitespacesAndNewlines)
+    string.trimmingCharacters(in: .whitespacesAndNewlines)
 }
 
 /**
@@ -96,7 +96,7 @@ private func trim(suffix: String, from string: String) -> String {
  - returns: A lazy sequence containing lines, with whitespace trimmed.
  */
 private func allLines(from listing: String) -> LazySequence<[String]> {
-    return listing.components(separatedBy: .newlines)
+    listing.components(separatedBy: .newlines)
         .map(trimWhitespace(from:))
         .lazy
 }
@@ -110,7 +110,7 @@ private func allLines(from listing: String) -> LazySequence<[String]> {
  - returns: `true` if `line` is a comment; `false` otherwise.
  */
 private func isComment(_ line: String) -> Bool {
-    return line.hasPrefix(commentPrefix)
+    line.hasPrefix(commentPrefix)
 }
 
 /**

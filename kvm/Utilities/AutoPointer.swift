@@ -25,7 +25,7 @@ final class AutoPointer<Contained> {
     init(count: Int, initialValue: Contained) {
         self.count = count
         self.storage = UnsafeMutablePointer.allocate(capacity: count)
-        storage.initialize(to: initialValue, count: count)
+        storage.initialize(repeating: initialValue, count: count)
     }
     
     /**
@@ -36,12 +36,12 @@ final class AutoPointer<Contained> {
     init(copying other: AutoPointer<Contained>) {
         self.count = other.count
         self.storage = UnsafeMutablePointer.allocate(capacity: count)
-        storage.assign(from: other.storage, count: other.count)
+        storage.update(from: other.storage, count: other.count)
     }
     
     deinit {
         storage.deinitialize(count: count)
-        storage.deallocate(capacity: count)
+        storage.deallocate()
     }
     
     // MARK: - Properties

@@ -21,7 +21,7 @@ struct Word: RawRepresentable, CustomStringConvertible {
     /**
      An empty word contianing zero.
      */
-    static let zero: Word = Word(rawValue: 0)
+    static let zero: Self = Self(rawValue: 0)
     
     /**
      Initialize the word with a signed integer value.
@@ -59,40 +59,38 @@ struct Word: RawRepresentable, CustomStringConvertible {
      Interpret the word as a signed integer.
      */
     var int: Int32 {
-        return Int32(bitPattern: rawValue)
+        Int32(bitPattern: rawValue)
     }
     
     /**
      Interpret the word as a bool. Any non-zero word value is `true`.
      */
     var bool: Bool {
-        return (rawValue != 0)
+        rawValue != 0
     }
     
     /**
      Interpret the word as a memory address.
      */
     var address: UInt16 {
-        return UInt16(rawValue)
+        UInt16(rawValue)
     }
     
     /**
      Advances to the next word and returns it.
      */
-    var next: Word {
-        return Word(rawValue: self.rawValue + 1)
+    var next: Self {
+        Self(rawValue: rawValue + 1)
     }
     
     /**
      Regresses to the previous word and returns it.
      */
-    var previous: Word {
-        return Word(rawValue: self.rawValue - 1)
+    var previous: Self {
+        Self(rawValue: rawValue - 1)
     }
     
     // MARK: - RawRepresentable
-    
-    typealias RawValue = UInt32
     
     var rawValue: UInt32
     
@@ -103,6 +101,6 @@ struct Word: RawRepresentable, CustomStringConvertible {
     // MARK: - CustomStringConvertible
     
     var description: String {
-        return "0x\(String(rawValue, radix: 16))"
+        "0x\(String(rawValue, radix: 16))"
     }
 }
